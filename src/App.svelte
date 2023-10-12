@@ -8,14 +8,25 @@
 	
 	Thanks to heroicons.dev for all the icons used here.
 	*/
+  import locationPng from "./assets/location.png";
   import { onMount } from "svelte";
   import L from "leaflet";
+
+  const baseUrl = "http://localhost:8000";
+
+  const myIcon = L.icon({
+    iconUrl: locationPng,
+    iconSize: [40, 40],
+    popupAnchor: [0, -25],
+  });
 
   let map;
   let geoLayer;
   let currPosLayer;
+  let currPosCircleLayer;
 
   let places = [];
+  let totalPage = 0;
   let geo = [];
   let categories = [];
 
@@ -32,7 +43,7 @@
   let selectedCategory = { name: "All", icon: "all" };
 
   async function getPlaces() {
-    let url = `${process.env.BASE_URL}/places?lat=${initialView[0]}&long=${initialView[1]}&range=10&page=${currentPage}`;
+    let url = `${baseUrl}/places?lat=${initialView[0]}&long=${initialView[1]}&range=10&page=${currentPage}`;
     if (category.icon !== "all") {
       url += `&category=${category.icon}`;
     }
@@ -53,9 +64,8 @@
       const crd = pos.coords;
 
       initialView = [crd.latitude, crd.longitude];
-      console.log(initialView);
 
-      categories = await fetch(`${process.env.BASE_URL}/categories`, {
+      categories = await fetch(`${baseUrl}/categories`, {
         method: "GET",
         redirect: "follow",
       })
@@ -66,6 +76,7 @@
         .then((result) => {
           places = result.data.places;
           geo = result.data.geo;
+          totalPage = Math.ceil(result.data.total / 25);
         })
         .catch((error) => console.log("error", error));
 
@@ -100,7 +111,10 @@
   function mapAction(container) {
     map = createMap(container);
     map.setView(initialView, 12);
-    currPosLayer = L.marker(initialView).bindPopup("Lokasi Saat Ini");
+    currPosLayer = L.marker(initialView, { icon: myIcon }).bindPopup(
+      "Lokasi Saat Ini"
+    );
+    currPosCircleLayer = L.circle(initialView, { radius: 500 });
     map.setZoom(12);
     return {
       destroy: () => {
@@ -124,30 +138,35 @@
     geoLayer.addTo(map);
   }
 
-  $: if (currPosLayer) {
-    if (currPosLayer) {
+  $: if (currPosCircleLayer) {
+    if (currPosCircleLayer) {
+      map.removeLayer(currPosCircleLayer);
       map.removeLayer(currPosLayer);
     }
 
-    currPosLayer = L.marker(initialView).bindPopup("Lokasi Saat Ini");
+    currPosCircleLayer = L.circle(initialView, { radius: 500 });
+    currPosLayer = L.marker(initialView, { icon: myIcon }).bindPopup(
+      "Lokasi Saat Ini"
+    );
 
     currPosLayer.addTo(map).openPopup();
+    currPosCircleLayer.addTo(map);
   }
 
   $: if (change && geo.length > 0 && map && mounted) {
     if (category != selectedCategory) {
-      page = 1;
+      currentPage = 1;
       category = selectedCategory;
     }
-
     change = false;
     getPlaces()
       .then((result) => {
-        if (result.data.geo.length > 1) {
+        if (result.data.geo.length > 0) {
           places = result.data.places;
           geo = result.data.geo;
           page = currentPage;
           category = selectedCategory;
+          totalPage = Math.ceil(result.data.total / 25);
         } else {
           currentPage = page;
         }
@@ -182,7 +201,7 @@
 >
   Prev
 </button>
-Page: {page}
+Page: {page}/{totalPage}
 <button
   on:click={() => {
     if (page === currentPage) {
@@ -205,6 +224,7 @@ Current: {category.name}
 <div style="margin-top: 10px;">
   <button
     style="margin-right: 12px;"
+    class={selectedCategory.icon === "all" ? "btn-active" : ""}
     on:click={() => {
       selectedCategory = { name: "All", icon: "all" };
       change = true;
@@ -213,6 +233,7 @@ Current: {category.name}
   {#each categories as ctg}
     <button
       style="margin-right: 12px;"
+      class={selectedCategory.icon === ctg.icon ? "btn-active" : ""}
       on:click={() => {
         selectedCategory = ctg;
         change = true;
