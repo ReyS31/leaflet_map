@@ -23,7 +23,6 @@
   let map;
   let geoLayer;
   let currPosLayer;
-  let currPosCircleLayer;
 
   let places = [];
   let totalPage = 0;
@@ -95,7 +94,7 @@
   });
 
   function createMap(container) {
-    let m = L.map(container, { preferCanvas: true }).setView(initialView, 12);
+    let m = L.map(container, { preferCanvas: true }).setView(initialView, 4);
     L.tileLayer(
       "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
       {
@@ -110,12 +109,12 @@
 
   function mapAction(container) {
     map = createMap(container);
-    map.setView(initialView, 12);
+    map.setView(initialView, 4);
     currPosLayer = L.marker(initialView, { icon: myIcon }).bindPopup(
       "Lokasi Saat Ini"
     );
-    currPosCircleLayer = L.circle(initialView, { radius: 500 });
-    map.setZoom(12);
+
+    map.flyTo(initialView, 16);
     return {
       destroy: () => {
         map.remove();
@@ -138,19 +137,16 @@
     geoLayer.addTo(map);
   }
 
-  $: if (currPosCircleLayer) {
-    if (currPosCircleLayer) {
-      map.removeLayer(currPosCircleLayer);
+  $: if (currPosLayer) {
+    if (currPosLayer) {
       map.removeLayer(currPosLayer);
     }
 
-    currPosCircleLayer = L.circle(initialView, { radius: 500 });
     currPosLayer = L.marker(initialView, { icon: myIcon }).bindPopup(
       "Lokasi Saat Ini"
     );
 
     currPosLayer.addTo(map).openPopup();
-    currPosCircleLayer.addTo(map);
   }
 
   $: if (change && geo.length > 0 && map && mounted) {
