@@ -1,8 +1,9 @@
-import './app.css'
-import App from './App.svelte'
+import "./app.postcss";
+// import App from "./App.svelte";
+import NewRoute from "./NewRoute.svelte";
 
-const app = new App({
-  target: document.getElementById('app'),
-})
+const app = new NewRoute({
+  target: document.getElementById("app"),
+});
 
-export default app
+export default app;
