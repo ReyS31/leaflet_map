@@ -1,24 +1,21 @@
 <script>
   import { onMount } from "svelte";
-  import { Router, Link, Route } from "svelte-routing";
-
   import bannerPng2 from "../assets/EventBanner-2.png";
 
-  // Lembuswana Mall Geolocation
-  let initialView = [-0.4749137205300664, 117.14719490690157];
+  export let id = "7a6ee9a7-ccb3-4f2a-8b5e-ff5c97ade700";
 
-  let places = [];
-  let rekreasi = [];
-  let budaya = [];
-  let detail = [];
+  let data = {
+    name: "test",
+    location: {
+      coordinates: [0, 0],
+    },
+  };
 
   const baseUrl = "https://spicy-rocks-melt-quietly.a276.dcdg.xyz";
 
-  // proses ambil data Rekreasi
-  async function getRekreasi() {
-    let url = `${baseUrl}/places?lat=${initialView[0]}&long=${initialView[1]}&range=10&page=1`;
-
-    url += `&category=tempat_rekreasi`;
+  // proses ambil data
+  async function getData() {
+    let url = `${baseUrl}/places/${id}`;
 
     fetch(url, {
       method: "GET",
@@ -26,59 +23,45 @@
     })
       .then((response) => response.json())
       .then((res) => {
-        rekreasi = res.data.places;
-      });
-  }
-
-  // proses ambil data Budayaa
-  async function getBudaya() {
-    let url = `${baseUrl}/places?lat=${initialView[0]}&long=${initialView[1]}&range=10&page=1`;
-
-    url += `&category=budaya`;
-
-    fetch(url, {
-      method: "GET",
-      redirect: "follow",
-    })
-      .then((response) => response.json())
-      .then((res) => {
-        budaya = res.data.places;
+        data = res.data;
       });
   }
 
   onMount(async () => {
-    await getRekreasi();
-    await getBudaya();
+    await getData();
   });
+
+  $: console.log("test" + id);
 </script>
 
-<div class="mx-8">
-  <div class="grid grid-rows-2 grid-flow-col gap-4">
-    <div class="row-span-3">
-      <!-- Banner Bottom -->
-      <div class="card p-8 px-3 py-3 mx-3 my-3 m-8">
-        <img style="border-radius:16px" width="100%" src={bannerPng2} />
-      </div>
-    </div>
-    <div class="col-span-2">
-      {#each budaya || rekreasi as place}
-        <h2 class="h2">{place.name}</h2>
-      {/each}
-    </div>
-    <div class="row-span-2 col-span-2">
-      <span class="badge variant-filled">Kategori Wisata</span>
-      <span class="badge variant-filled">Alamat Tempat Wisata</span>
+<div class="m-8">
+  <div class="flex">
+    <img style="border-radius:16px" class="w-3/4" src={bannerPng2} />
+    <div class="flex flex-col text-center w-1/4">
+      <h2 class="h2 mb-3">{data.name}</h2>
+      <h4 class="h4 mb-3">{data.category}</h4>
+      <p>
+        {data.address}
+      </p>
     </div>
   </div>
   <!-- Bagian bawah konten -->
-  <div class="grid grid-rows-2 grid-flow-col gap-4">
-    <div class="row-span-3">
+  <div class="flex flex-col">
+    <div class="row-span-2">
       <h2 class="h2">Sekilas Informasi Tentang Tempat Wisata</h2>
     </div>
-    <div class="col-span-2">
+    <!-- <div class="col-span-2"> -->
+    <div>
       <span class="badge variant-filled">Jam Buka</span>
-      <span class="badge variant-filled">Petunjuk Arah</span>
+      <a
+        href={`https://www.google.com/maps/search/?api=1&query=${data.location.coordinates[1]}%2C${data.location.coordinates[0]}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span class="badge variant-filled">Petunjuk Arah</span></a
+      >
     </div>
+    <!-- </div> -->
 
     <!-- <div class="row-span-2 col-span-2">ssss</div> -->
   </div>

@@ -139,7 +139,7 @@
       "Lokasi Saat Ini"
     );
 
-    map.flyTo(initialView, 16);
+    map.flyTo(initialView, 13);
     return {
       destroy: () => {
         map.remove();
@@ -175,7 +175,7 @@
   }
 
   $: if (change && geo.length > 0 && map && mounted) {
-    if (category != selectedCategory) {
+    if (category.name != selectedCategory.name) {
       currentPage = 1;
       category = selectedCategory;
     }

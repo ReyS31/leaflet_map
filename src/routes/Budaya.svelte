@@ -43,19 +43,20 @@
 <h1 class="h1 py-4 px-6">Rekomendasi Tempat Wisata Kerajinan dan Kebudayaan</h1>
 
 <div
-  class="snap-x scroll-px-4 snap-mandatory scroll-smooth flex gap-4 overflow-x-auto px-4 py-5"
+  class="snap-x scroll-px-4 snap-mandatory scroll-smooth flex gap-4 overflow-x-auto px-4 py-5 justify-center"
 >
   {#each budaya as place}
-    <Link to="/detailWisata">
-      <div class="snap-start shrink-0 card py-5 w-40 md:w-80 text-center">
-        {place.name}
-        <img
-          style="border-radius:16px"
-          width="100%"
-          src={wisataPng1}
-          alt="Tempat Wisata"
-        />
-      </div>
+    <Link
+      to={"/tempat/" + place.id}
+      class="snap-start shrink-0 card py-5 w-40 md:w-80 text-center"
+    >
+      {place.name}
+      <img
+        style="border-radius:16px"
+        width="100%"
+        src={wisataPng1}
+        alt="Tempat Wisata"
+      />
     </Link>
   {/each}
 </div>
@@ -64,34 +65,36 @@
   class="snap-x scroll-px-4 snap-mandatory scroll-smooth flex gap-4 overflow-x-auto px-4 py-5"
 >
   {#each budaya as place}
-    <Link to="/detailWisata">
-      <div class="snap-start shrink-0 card py-5 w-40 md:w-80 text-center">
-        {place.name}
-        <img
-          style="border-radius:16px"
-          width="100%"
-          src={wisataPng2}
-          alt="Tempat Wisata"
-        />
-      </div>
+    <Link
+      to={"/tempat/" + place.id}
+      class="snap-start shrink-0 card py-5 w-40 md:w-80 text-center"
+    >
+      {place.name}
+      <img
+        style="border-radius:16px"
+        width="100%"
+        src={wisataPng2}
+        alt="Tempat Wisata"
+      />
     </Link>
   {/each}
 </div>
 
 <div
-  class="snap-x scroll-px-4 snap-mandatory scroll-smooth flex gap-4 overflow-x-auto px-4 py-5"
+  class="snap-x scroll-px-4 snap-mandatory scroll-smooth flex gap-4 overflow-x-auto px-4 py-5 justify-end"
 >
   {#each budaya as place}
-    <Link to="/detailWisata">
-      <div class="snap-start shrink-0 card py-5 w-40 md:w-80 text-center">
-        {place.name}
-        <img
-          style="border-radius:16px"
-          width="100%"
-          src={wisataPng3}
-          alt="Tempat Wisata"
-        />
-      </div>
+    <Link
+      to={"/tempat/" + place.id}
+      class="snap-start shrink-0 card py-5 w-40 md:w-80 text-center"
+    >
+      {place.name}
+      <img
+        style="border-radius:16px"
+        width="100%"
+        src={wisataPng3}
+        alt="Tempat Wisata"
+      />
     </Link>
   {/each}
 </div>

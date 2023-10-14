@@ -34,7 +34,7 @@
       </svelte:fragment>
     </AppBar>
 
-    <Route path="/detailWisata" component={DetailWisata} />
+    <Route path="/tempat/:id" component={DetailWisata}/>
     <Route path="/rekreasi" component={Rekreasi} />
     <Route path="/budaya" component={Budaya} />
     <Route path="/"><App /></Route>
