@@ -8,11 +8,18 @@
 	
 	Thanks to heroicons.dev for all the icons used here.
 	*/
+
   import locationPng from "./assets/location.png";
+  import bannerPng from "./assets/EventBanner-1.png";
+  import bannerPng2 from "./assets/EventBanner-2.png";
+  import arrowRight from "./assets/icon/Arrow-Right.png";
+  import arrowLeft from "./assets/icon/Arrow-Left.png";
   import { onMount } from "svelte";
   import L from "leaflet";
+  import { AppBar } from "@skeletonlabs/skeleton";
+  import { Router, Link, Route } from "svelte-routing";
 
-  const baseUrl = "http://localhost:8000";
+  const baseUrl = "https://spicy-rocks-melt-quietly.a276.dcdg.xyz";
 
   const myIcon = L.icon({
     iconUrl: locationPng,
@@ -25,6 +32,7 @@
   let currPosLayer;
 
   let places = [];
+  let hotels = [];
   let totalPage = 0;
   let geo = [];
   let categories = [];
@@ -50,6 +58,21 @@
       method: "GET",
       redirect: "follow",
     }).then((response) => response.json());
+  }
+
+  async function getHotels() {
+    let url = `${baseUrl}/places?lat=${initialView[0]}&long=${initialView[1]}&range=10&page=1`;
+
+    url += `&category=hotel`;
+
+    fetch(url, {
+      method: "GET",
+      redirect: "follow",
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        hotels = res.data.places;
+      });
   }
 
   async function toCurrentLocation() {
@@ -78,6 +101,8 @@
           totalPage = Math.ceil(result.data.total / 25);
         })
         .catch((error) => console.log("error", error));
+
+      getHotels();
 
       mounted = true;
     }
@@ -175,7 +200,14 @@
       map.invalidateSize();
     }
   }
+
+  export let url = "";
 </script>
+
+<div />
+<div class="card p-12 px-3 py-3 mx-3 my-3 m-12">
+  <img style="border-radius:16px" width="100%" src={bannerPng} />
+</div>
 
 <link
   rel="stylesheet"
@@ -184,9 +216,20 @@
   crossorigin=""
 />
 
-<svelte:window on:resize={resizeMap} />
+<!-- <AppBar gridColumns="grid-cols-3">
+  <Router {url}>
+    <nav>
+      <Link to="/">Home</Link>
+      <Link to="/budaya">Jelajah Budaya</Link>
+      <Link to="/rekreasi">Tempat Rekreasi</Link>
+    </nav>
+  </Router>
+</AppBar> -->
 
-<div class="map" style="height:750px;width:100%" use:mapAction />
+<svelte:window on:resize={resizeMap} />
+<div class="card p-4">
+  <div class="map" style="height:500px; width:100%" use:mapAction />
+</div>
 <button
   on:click={() => {
     if (page > 1) {
@@ -195,7 +238,7 @@
     }
   }}
 >
-  Prev
+  <img src={arrowLeft} width="24em" alt="" />
 </button>
 Page: {page}/{totalPage}
 <button
@@ -206,7 +249,7 @@ Page: {page}/{totalPage}
     }
   }}
 >
-  Next
+  <img src={arrowRight} width="24em" alt="" />
 </button>
 Current: {category.name}
 <button
@@ -217,6 +260,10 @@ Current: {category.name}
   Current Pos
 </button>
 <br />
+
+<br />
+<h1 class="h1 py-4 px-6">Kategori Tempat Wisata</h1>
+
 <div style="margin-top: 10px;">
   <button
     style="margin-right: 12px;"
@@ -236,6 +283,43 @@ Current: {category.name}
       }}>{ctg.name}</button
     >
   {/each}
+</div>
+
+<div
+  class="snap-x scroll-px-4 snap-mandatory scroll-smooth flex gap-4 overflow-x-auto px-4 py-10"
+>
+  {#each places as place}
+    <div class="snap-start shrink-0 card py-20 w-40 md:w-80 text-center">
+      {place.name}
+    </div>
+  {/each}
+</div>
+
+<h1 class="h1 py-4 px-6">Rekomendasi Tempat Wisata</h1>
+<div
+  class="snap-x scroll-px-4 snap-mandatory scroll-smooth flex gap-4 overflow-x-auto px-4 py-10"
+>
+  {#each places as place}
+    <div class="snap-start shrink-0 card py-40 w-40 md:w-80 text-center">
+      {place.name}
+    </div>
+  {/each}
+</div>
+
+<h1 class="h1 py-4 px-6">Hotel & Penginapan</h1>
+<div
+  class="snap-x scroll-px-4 snap-mandatory scroll-smooth flex gap-4 overflow-x-auto px-4 py-10"
+>
+  {#each hotels as hotel}
+    <div class="snap-start shrink-0 card py-40 w-40 md:w-80 text-center">
+      {hotel.name}
+    </div>
+  {/each}
+</div>
+
+<!-- Banner Bottom -->
+<div class="card p-12 px-3 py-3 mx-3 my-3 m-12">
+  <img style="border-radius:16px" width="100%" src={bannerPng2} />
 </div>
 
 <style>
